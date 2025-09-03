@@ -1,16 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Alert, Badge, Nav } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Project, ProjectFormData } from '../types';
 import { projectsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import { 
+  FiSave, 
+  FiArrowLeft, 
+  FiFileText, 
+  FiDollarSign, 
+  FiUsers, 
+  FiCreditCard,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiLock,
+  FiEye
+} from 'react-icons/fi';
+import './projectForm.css'; // We'll create this for custom styles
 
 const ProjectForm: React.FC = () => {
   const [formData, setFormData] = useState<ProjectFormData>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [project, setProject] = useState<Project | null>(null);
+  const [activeSection, setActiveSection] = useState('');
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -20,10 +34,33 @@ const ProjectForm: React.FC = () => {
   const editingPart = part || 'part1';
 
   // Role-based permission checks
-  const canEditPart1 = () => user?.role === 'project_team';
-  const canEditPart2 = () => user?.role === 'finance_team';
-  const canEditPart3 = () => user?.role === 'project_team';
-  const canEditInvoicePayment = () => user?.role === 'finance_team' || user?.role === 'project_team';
+  const canEditPart1 = () => {
+    if (user?.permissions) {
+      return user.permissions.canEditPart1;
+    }
+    return user?.role === 'project_team' || user?.role === 'admin';
+  };
+  
+  const canEditPart2 = () => {
+    if (user?.permissions) {
+      return user.permissions.canEditPart2;
+    }
+    return user?.role === 'finance_team' || user?.role === 'admin';
+  };
+  
+  const canEditPart3 = () => {
+    if (user?.permissions) {
+      return user.permissions.canEditPart3;
+    }
+    return user?.role === 'project_team' || user?.role === 'admin';
+  };
+  
+  const canEditInvoicePayment = () => {
+    if (user?.permissions) {
+      return user.permissions.canEditInvoicePayment;
+    }
+    return user?.role === 'finance_team' || user?.role === 'project_team' || user?.role === 'admin';
+  };
   
   const canEditCurrentPart = () => {
     switch (editingPart) {
@@ -52,17 +89,19 @@ const ProjectForm: React.FC = () => {
       part1: 'Project Team',
       part2: 'Finance Team',
       part3: 'Project Team',
-      invoice_payment: 'Finance Team'
+      invoice_payment: 'Finance Team or Project Team'
     };
     
-    return `Access Denied: Only ${requiredRoles[editingPart as keyof typeof requiredRoles]} members can edit the ${partNames[editingPart as keyof typeof partNames]} section.`;
+    return `Only ${requiredRoles[editingPart as keyof typeof requiredRoles]} members can edit the ${partNames[editingPart as keyof typeof partNames]} section.`;
   };
 
   useEffect(() => {
     if (isEditing && id) {
       fetchProject();
     }
-  }, [isEditing, id]);
+    setActiveSection(editingPart);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing, id, editingPart]);
 
   const fetchProject = async () => {
     try {
@@ -207,7 +246,7 @@ const ProjectForm: React.FC = () => {
       } else {
         // Create new project (only project team can create)
         if (!canEditPart1()) {
-          setError('Access Denied: Only Project Team members can create new projects.');
+          setError('Only Project Team members can create new projects.');
           return;
         }
         await projectsAPI.createProject(formData);
@@ -225,9 +264,14 @@ const ProjectForm: React.FC = () => {
   };
 
   const renderPart1Fields = () => (
-    <>
+    <div className="form-section">
+      <h5 className="section-title">
+        <FiFileText className="me-2" />
+        Project Information
+      </h5>
+      
       <Form.Group className="mb-3">
-        <Form.Label>Name of Awarded Tender *</Form.Label>
+        <Form.Label className="fw-semibold">Name of Awarded Tender <span className="text-danger">*</span></Form.Label>
         <Form.Control
           type="text"
           name="nameOfAwardedTender"
@@ -235,17 +279,19 @@ const ProjectForm: React.FC = () => {
           onChange={handleChange}
           required
           placeholder="Enter the name of awarded tender"
+          className="form-control-lg"
         />
       </Form.Group>
 
       <Row>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label>Performance Bond Submission</Form.Label>
+            <Form.Label className="fw-semibold">Performance Bond Submission</Form.Label>
             <Form.Select
               name="performanceBondSubmission"
               value={formData.performanceBondSubmission || 'N/A'}
               onChange={handleChange}
+              className="form-select-lg"
             >
               <option value="N/A">N/A</option>
               <option value="Yes">Yes</option>
@@ -255,11 +301,12 @@ const ProjectForm: React.FC = () => {
         </Col>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label>Agreement Signed</Form.Label>
+            <Form.Label className="fw-semibold">Agreement Signed</Form.Label>
             <Form.Select
               name="agreementSigned"
               value={formData.agreementSigned || 'N/A'}
               onChange={handleChange}
+              className="form-select-lg"
             >
               <option value="N/A">N/A</option>
               <option value="Yes">Yes</option>
@@ -270,7 +317,7 @@ const ProjectForm: React.FC = () => {
       </Row>
 
       <Form.Group className="mb-3">
-        <Form.Label>Site Details *</Form.Label>
+        <Form.Label className="fw-semibold">Site Details <span className="text-danger">*</span></Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -279,16 +326,18 @@ const ProjectForm: React.FC = () => {
           onChange={handleChange}
           required
           placeholder="Enter site details"
+          className="form-control-lg"
         />
       </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Create the Project in Dislio *</Form.Label>
+      <Form.Group className="mb-4">
+        <Form.Label className="fw-semibold">Create the Project in Dislio <span className="text-danger">*</span></Form.Label>
         <Form.Select
           name="createProjectInDislio"
           value={formData.createProjectInDislio || ''}
           onChange={handleChange}
           required
+          className="form-select-lg"
         >
           <option value="">Select an option</option>
           <option value="Yes">Yes</option>
@@ -297,7 +346,7 @@ const ProjectForm: React.FC = () => {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Note for Finance Team</Form.Label>
+        <Form.Label className="fw-semibold">Note for Finance Team</Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -305,22 +354,29 @@ const ProjectForm: React.FC = () => {
           value={formData.noteForFinanceTeam_part1 || ''}
           onChange={handleChange}
           placeholder="Optional note for finance team"
+          className="form-control-lg"
         />
       </Form.Group>
-    </>
+    </div>
   );
 
   const renderPart2Fields = () => (
-    <>
+    <div className="form-section">
+      <h5 className="section-title">
+        <FiDollarSign className="me-2" />
+        Finance Details
+      </h5>
+      
       <Row>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label>Check with Store Manager *</Form.Label>
+            <Form.Label className="fw-semibold">Check with Store Manager <span className="text-danger">*</span></Form.Label>
             <Form.Select
               name="checkWithStoreManager"
               value={formData.checkWithStoreManager || 'No'}
               onChange={handleChange}
               required
+              className="form-select-lg"
             >
               <option value="No">No</option>
               <option value="Yes">Yes</option>
@@ -329,20 +385,23 @@ const ProjectForm: React.FC = () => {
         </Col>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label>Ready or Not *</Form.Label>
-            <Form.Check
-              type="checkbox"
-              name="readyOrNot"
-              label="Ready"
-              checked={formData.readyOrNot || false}
-              onChange={handleChange}
-            />
+            <Form.Label className="fw-semibold">Ready or Not</Form.Label>
+            <div className="mt-2">
+              <Form.Check
+                type="switch"
+                id="readyOrNotSwitch"
+                name="readyOrNot"
+                label={formData.readyOrNot ? "Ready" : "Not Ready"}
+                checked={formData.readyOrNot || false}
+                onChange={handleChange}
+              />
+            </div>
           </Form.Group>
         </Col>
       </Row>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Purchasing Note *</Form.Label>
+      <Form.Group className="mb-4">
+        <Form.Label className="fw-semibold">Purchasing Note <span className="text-danger">*</span></Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -351,11 +410,12 @@ const ProjectForm: React.FC = () => {
           onChange={handleChange}
           required
           placeholder="Enter purchasing note"
+          className="form-control-lg"
         />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Note for Finance Team</Form.Label>
+        <Form.Label className="fw-semibold">Note for Finance Team</Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -363,20 +423,27 @@ const ProjectForm: React.FC = () => {
           value={formData.noteForFinanceTeam_part2 || ''}
           onChange={handleChange}
           placeholder="Optional note for finance team"
+          className="form-control-lg"
         />
       </Form.Group>
-    </>
+    </div>
   );
 
   const renderPart3Fields = () => (
-    <>
+    <div className="form-section">
+      <h5 className="section-title">
+        <FiUsers className="me-2" />
+        Team Details
+      </h5>
+      
       <Form.Group className="mb-3">
-        <Form.Label>Select Team *</Form.Label>
+        <Form.Label className="fw-semibold">Select Team <span className="text-danger">*</span></Form.Label>
         <Form.Select
           name="selectTeam"
           value={formData.selectTeam || 'Company'}
           onChange={handleChange}
           required
+          className="form-select-lg"
         >
           <option value="Company">Company</option>
           <option value="Subcontractor">Subcontractor</option>
@@ -384,7 +451,7 @@ const ProjectForm: React.FC = () => {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Structure Panel *</Form.Label>
+        <Form.Label className="fw-semibold">Structure Panel <span className="text-danger">*</span></Form.Label>
         <Form.Control
           type="text"
           name="structurePanel"
@@ -392,11 +459,12 @@ const ProjectForm: React.FC = () => {
           onChange={handleChange}
           required
           placeholder="Enter structure panel details"
+          className="form-control-lg"
         />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Timeline *</Form.Label>
+        <Form.Label className="fw-semibold">Timeline <span className="text-danger">*</span></Form.Label>
         <Form.Control
           type="text"
           name="timeline"
@@ -404,11 +472,12 @@ const ProjectForm: React.FC = () => {
           onChange={handleChange}
           required
           placeholder="Enter timeline details"
+          className="form-control-lg"
         />
       </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Site Installation Note *</Form.Label>
+      <Form.Group className="mb-4">
+        <Form.Label className="fw-semibold">Site Installation Note <span className="text-danger">*</span></Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -417,11 +486,12 @@ const ProjectForm: React.FC = () => {
           onChange={handleChange}
           required
           placeholder="Enter site installation note"
+          className="form-control-lg"
         />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Note for Finance Team</Form.Label>
+        <Form.Label className="fw-semibold">Note for Finance Team</Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -429,22 +499,29 @@ const ProjectForm: React.FC = () => {
           value={formData.noteForFinanceTeam_part3 || ''}
           onChange={handleChange}
           placeholder="Optional note for finance team"
+          className="form-control-lg"
         />
       </Form.Group>
-    </>
+    </div>
   );
 
   const renderInvoicePaymentFields = () => (
-    <>
+    <div className="form-section">
+      <h5 className="section-title">
+        <FiCreditCard className="me-2" />
+        Invoice & Payment
+      </h5>
+      
       <Row>
         <Col md={6}>
-          <Form.Group className="mb-3">
-            <Form.Label>Invoice Create *</Form.Label>
+          <Form.Group className="mb-4">
+            <Form.Label className="fw-semibold">Invoice Create <span className="text-danger">*</span></Form.Label>
             <Form.Select
               name="invoiceCreate"
               value={formData.invoiceCreate || 'Not Yet'}
               onChange={handleChange}
               required
+              className="form-select-lg"
             >
               <option value="Not Yet">Not Yet</option>
               <option value="Done">Done</option>
@@ -452,13 +529,14 @@ const ProjectForm: React.FC = () => {
           </Form.Group>
         </Col>
         <Col md={6}>
-          <Form.Group className="mb-3">
-            <Form.Label>Payment Status *</Form.Label>
+          <Form.Group className="mb-4">
+            <Form.Label className="fw-semibold">Payment Status <span className="text-danger">*</span></Form.Label>
             <Form.Select
               name="paymentStatus"
               value={formData.paymentStatus || 'None'}
               onChange={handleChange}
               required
+              className="form-select-lg"
             >
               <option value="None">None</option>
               <option value="20%">20%</option>
@@ -469,21 +547,21 @@ const ProjectForm: React.FC = () => {
           </Form.Group>
         </Col>
       </Row>
-    </>
+    </div>
   );
 
   const getFormTitle = () => {
-    if (!isEditing) return 'Create New Project - Part 1';
+    if (!isEditing) return 'Create New Project';
     
     switch (editingPart) {
       case 'part2':
-        return 'Edit Project - Finance Section';
+        return 'Finance Details';
       case 'part3':
-        return 'Edit Project - Project Team Section';
+        return 'Team Details';
       case 'invoice_payment':
-        return 'Edit Project - Invoice & Payment';
+        return 'Invoice & Payment';
       default:
-        return 'Edit Project';
+        return 'Project Information';
     }
   };
 
@@ -502,34 +580,184 @@ const ProjectForm: React.FC = () => {
     }
   };
 
+  const getPartStatus = (partName: string) => {
+    if (!project) return 'pending';
+    
+    switch (partName) {
+      case 'part1':
+        return project.part1Completed ? 'completed' : 'pending';
+      case 'part2':
+        return project.part2Completed ? 'completed' : 'pending';
+      case 'part3':
+        return project.part3Completed ? 'completed' : 'pending';
+      default:
+        return 'pending';
+    }
+  };
+
+  const renderPartNavigation = () => {
+    if (!isEditing) return null;
+    
+    return (
+      <Card className="mb-4">
+        <Card.Header className="bg-light">
+          <h6 className="mb-0">Project Sections</h6>
+        </Card.Header>
+        <Card.Body className="py-2">
+          <Nav variant="pills" className="flex-row flex-md-column">
+            <Nav.Item className="me-2 me-md-0 mb-1">
+              <Nav.Link 
+                active={activeSection === 'part1'}
+                onClick={() => navigate(`/projects/${id}/edit/part1`)}
+                className="d-flex align-items-center justify-content-between"
+              >
+                <span>
+                  <FiFileText className="me-2" />
+                  Project Info
+                </span>
+                {getPartStatus('part1') === 'completed' && 
+                  <FiCheckCircle size={16} className="text-success" />
+                }
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item className="me-2 me-md-0 mb-1">
+              <Nav.Link 
+                active={activeSection === 'part2'}
+                onClick={() => navigate(`/projects/${id}/edit/part2`)}
+                className="d-flex align-items-center justify-content-between"
+              >
+                <span>
+                  <FiDollarSign className="me-2" />
+                  Finance
+                </span>
+                {getPartStatus('part2') === 'completed' && 
+                  <FiCheckCircle size={16} className="text-success" />
+                }
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item className="me-2 me-md-0 mb-1">
+              <Nav.Link 
+                active={activeSection === 'part3'}
+                onClick={() => navigate(`/projects/${id}/edit/part3`)}
+                className="d-flex align-items-center justify-content-between"
+              >
+                <span>
+                  <FiUsers className="me-2" />
+                  Team
+                </span>
+                {getPartStatus('part3') === 'completed' && 
+                  <FiCheckCircle size={16} className="text-success" />
+                }
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item className="me-2 me-md-0">
+              <Nav.Link 
+                active={activeSection === 'invoice_payment'}
+                onClick={() => navigate(`/projects/${id}/edit/invoice_payment`)}
+                className="d-flex align-items-center justify-content-between"
+              >
+                <span>
+                  <FiCreditCard className="me-2" />
+                  Invoice & Payment
+                </span>
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Card.Body>
+      </Card>
+    );
+  };
+
   return (
-    <Container>
-      <Row className="justify-content-center">
-        <Col md={8}>
-          <Card>
-            <Card.Header>
-              <h4>{getFormTitle()}</h4>
-              {project && (
-                <small className="text-muted">
-                  Project: {project.nameOfAwardedTender}
-                </small>
-              )}
+    <Container fluid="lg" className="py-4">
+      <Row>
+        <Col lg={3} className="d-none d-lg-block">
+          {renderPartNavigation()}
+          
+          {/* Permissions Info Card */}
+          <Card className="mb-4">
+            <Card.Header className="bg-light">
+              <h6 className="mb-0">Your Permissions</h6>
             </Card.Header>
             <Card.Body>
-              {error && <Alert variant="danger">{error}</Alert>}
+              <div className="d-flex flex-column gap-2">
+                <div className="d-flex align-items-center">
+                  {canEditPart1() ? 
+                    <FiCheckCircle className="text-success me-2" /> : 
+                    <FiLock className="text-muted me-2" />
+                  }
+                  <span>Edit Project Info</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  {canEditPart2() ? 
+                    <FiCheckCircle className="text-success me-2" /> : 
+                    <FiLock className="text-muted me-2" />
+                  }
+                  <span>Edit Finance Details</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  {canEditPart3() ? 
+                    <FiCheckCircle className="text-success me-2" /> : 
+                    <FiLock className="text-muted me-2" />
+                  }
+                  <span>Edit Team Details</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  {canEditInvoicePayment() ? 
+                    <FiCheckCircle className="text-success me-2" /> : 
+                    <FiLock className="text-muted me-2" />
+                  }
+                  <span>Edit Invoice & Payment</span>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        
+        <Col lg={9}>
+          <Card className="shadow-sm">
+            <Card.Header className="bg-white py-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h4 className="mb-0">{getFormTitle()}</h4>
+                  {project && (
+                    <p className="text-muted mb-0 mt-1">
+                      Project: {project.nameOfAwardedTender}
+                    </p>
+                  )}
+                </div>
+                <Badge bg={isEditing ? "info" : "primary"}>
+                  {isEditing ? "Editing" : "Creating New"}
+                </Badge>
+              </div>
+            </Card.Header>
+            
+            <Card.Body className="p-4">
+              {error && (
+                <Alert variant="danger" className="d-flex align-items-center">
+                  <FiAlertCircle className="me-2" size={20} />
+                  {error}
+                </Alert>
+              )}
               
               {/* Access Control Warning */}
               {isEditing && !canEditCurrentPart() && (
-                <Alert variant="warning">
-                  <Alert.Heading>View Only Mode</Alert.Heading>
-                  {getAccessDeniedMessage()}
+                <Alert variant="warning" className="d-flex align-items-center">
+                  <FiEye className="me-2" size={20} />
+                  <div>
+                    <h6 className="alert-heading">View Only Mode</h6>
+                    {getAccessDeniedMessage()}
+                  </div>
                 </Alert>
               )}
               
               {!isEditing && !canEditPart1() && (
-                <Alert variant="warning">
-                  <Alert.Heading>Access Denied</Alert.Heading>
-                  Only Project Team members can create new projects.
+                <Alert variant="warning" className="d-flex align-items-center">
+                  <FiLock className="me-2" size={20} />
+                  <div>
+                    <h6 className="alert-heading">Access Denied</h6>
+                    Only Project Team members can create new projects.
+                  </div>
                 </Alert>
               )}
               
@@ -538,20 +766,34 @@ const ProjectForm: React.FC = () => {
                   {renderFormFields()}
                 </fieldset>
                 
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-2 mt-4 pt-3 border-top">
                   <Button
-                    variant="secondary"
+                    variant="outline-secondary"
                     onClick={() => navigate('/dashboard')}
+                    className="d-flex align-items-center"
                   >
+                    <FiArrowLeft className="me-2" />
                     {isEditing && !canEditCurrentPart() ? 'Back to Dashboard' : 'Cancel'}
                   </Button>
+                  
                   {((isEditing && canEditCurrentPart()) || (!isEditing && canEditPart1())) && (
                     <Button
                       type="submit"
                       variant="primary"
                       disabled={loading}
+                      className="d-flex align-items-center"
                     >
-                      {loading ? 'Saving...' : 'Save'}
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <FiSave className="me-2" />
+                          Save Changes
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>

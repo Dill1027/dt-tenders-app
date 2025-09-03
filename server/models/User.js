@@ -17,8 +17,30 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['project_team', 'finance_team', 'all_users'],
+    enum: ['project_team', 'finance_team', 'all_users', 'admin'],
     required: true
+  },
+  permissions: {
+    canViewAll: {
+      type: Boolean,
+      default: true
+    },
+    canEditPart1: {
+      type: Boolean,
+      default: false
+    },
+    canEditPart2: {
+      type: Boolean,
+      default: false
+    },
+    canEditPart3: {
+      type: Boolean,
+      default: false
+    },
+    canEditInvoicePayment: {
+      type: Boolean,
+      default: false
+    }
   },
   isActive: {
     type: Boolean,

@@ -1,7 +1,16 @@
+export interface UserPermissions {
+  canViewAll: boolean;
+  canEditPart1: boolean;
+  canEditPart2: boolean;
+  canEditPart3: boolean;
+  canEditInvoicePayment: boolean;
+}
+
 export interface User {
   id: string;
   username: string;
-  role: 'project_team' | 'finance_team' | 'all_users';
+  role: 'project_team' | 'finance_team' | 'all_users' | 'admin';
+  permissions?: UserPermissions;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -61,16 +70,6 @@ export interface AuthContextType {
 export interface LoginData {
   username: string;
   password: string;
-}
-
-export interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role: 'project_team' | 'finance_team' | 'all_users';
-  department: string;
 }
 
 export interface ProjectFormData {

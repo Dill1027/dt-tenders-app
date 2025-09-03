@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Badge, Pagination } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Button, Form, Badge, Pagination, Nav } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { Project, ProjectsResponse } from '../types';
 import { projectsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import { 
+  FiSearch, 
+  FiPlus, 
+  FiFilter, 
+  FiRefreshCw, 
+  FiEye, 
+  FiDollarSign, 
+  FiUsers, 
+  FiFileText,
+  FiTrendingUp,
+  FiCheckCircle,
+  FiClock,
+  FiArchive,
+  FiUser,
+  FiCalendar
+} from 'react-icons/fi';
+import './Dashboard.css'; // We'll create this CSS file
 
 const Dashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -54,14 +71,14 @@ const Dashboard: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      draft: { variant: 'secondary', text: 'Draft' },
-      in_progress: { variant: 'warning', text: 'In Progress' },
-      completed: { variant: 'success', text: 'Completed' },
-      cancelled: { variant: 'danger', text: 'Cancelled' }
+      draft: { variant: 'secondary', text: 'Draft', icon: <FiFileText className="me-1" /> },
+      in_progress: { variant: 'warning', text: 'In Progress', icon: <FiClock className="me-1" /> },
+      completed: { variant: 'success', text: 'Completed', icon: <FiCheckCircle className="me-1" /> },
+      cancelled: { variant: 'danger', text: 'Cancelled', icon: <FiArchive className="me-1" /> }
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
-    return <Badge bg={config.variant}>{config.text}</Badge>;
+    return <Badge bg={config.variant} className="d-flex align-items-center status-badge">{config.icon}{config.text}</Badge>;
   };
 
   const getCompletionBadge = (project: Project) => {
@@ -74,21 +91,48 @@ const Dashboard: React.FC = () => {
     else if (percentage >= 66) variant = 'warning';
     else if (percentage >= 33) variant = 'info';
 
-    return <Badge bg={variant}>{completed}/{total} Parts ({percentage}%)</Badge>;
+    return (
+      <div className="d-flex align-items-center">
+        <div className="progress me-2 progress-bar-custom" role="progressbar">
+          <div 
+            className={`progress-bar-filled bg-${variant}`} 
+            style={{ width: `${percentage}%` }}
+          ></div>
+        </div>
+        <small className="text-muted">{completed}/{total} ({percentage}%)</small>
+      </div>
+    );
   };
 
   const canEditProject = (project: Project, part: string) => {
     if (!user) return false;
     
+    // Check explicit permissions first
+    if (user.permissions) {
+      switch (part) {
+        case 'part1':
+          return user.permissions.canEditPart1;
+        case 'part2':
+          return user.permissions.canEditPart2;
+        case 'part3':
+          return user.permissions.canEditPart3;
+        case 'invoice_payment':
+          return user.permissions.canEditInvoicePayment;
+        default:
+          return false;
+      }
+    }
+    
+    // Fallback to role-based permissions
     switch (part) {
       case 'part1':
-        return user.role === 'project_team';
+        return user.role === 'project_team' || user.role === 'admin';
       case 'part2':
-        return user.role === 'finance_team';
+        return user.role === 'finance_team' || user.role === 'admin';
       case 'part3':
-        return user.role === 'project_team';
+        return user.role === 'project_team' || user.role === 'admin';
       case 'invoice_payment':
-        return user.role === 'finance_team' || user.role === 'project_team';
+        return user.role === 'finance_team' || user.role === 'project_team' || user.role === 'admin';
       default:
         return false;
     }
@@ -98,12 +142,21 @@ const Dashboard: React.FC = () => {
     if (pagination.pages <= 1) return null;
 
     const items = [];
-    for (let number = 1; number <= pagination.pages; number++) {
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(pagination.pages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let number = startPage; number <= endPage; number++) {
       items.push(
         <Pagination.Item 
           key={number} 
           active={number === currentPage}
           onClick={() => setCurrentPage(number)}
+          className="pagination-item"
         >
           {number}
         </Pagination.Item>
@@ -111,200 +164,279 @@ const Dashboard: React.FC = () => {
     }
 
     return (
-      <Pagination className="justify-content-center">
-        <Pagination.Prev 
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        />
-        {items}
-        <Pagination.Next 
-          disabled={currentPage === pagination.pages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        />
-      </Pagination>
+      <div className="d-flex justify-content-between align-items-center mt-3 pagination-container">
+        <div className="text-muted pagination-info">
+          Showing {((currentPage - 1) * pagination.limit) + 1} to {Math.min(currentPage * pagination.limit, pagination.total)} of {pagination.total} entries
+        </div>
+        <Pagination className="mb-0 custom-pagination">
+          <Pagination.Prev 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="pagination-nav"
+          />
+          {items}
+          <Pagination.Next 
+            disabled={currentPage === pagination.pages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="pagination-nav"
+          />
+        </Pagination>
+      </div>
     );
   };
 
+  const getRoleDisplay = (role: string) => {
+    switch (role) {
+      case 'project_team': return 'Project Team';
+      case 'finance_team': return 'Finance Team';
+      case 'admin': return 'Administrator';
+      default: return 'General User';
+    }
+  };
+
   return (
-    <Container fluid>
-      <Row>
+    <Container fluid className="dashboard-container">
+      <Row className="mb-4">
         <Col>
-          <h1 className="mb-4">DT TENDERS Dashboard</h1>
-          
-          {/* Search and Filters */}
-          <Card className="mb-4">
-            <Card.Body>
-              <Form onSubmit={handleSearch}>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label>Search Projects</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Search by tender name or site details..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group>
-                      <Form.Label>Status Filter</Form.Label>
-                      <Form.Select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                      >
-                        <option value="">All Statuses</option>
-                        <option value="draft">Draft</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={3} className="d-flex align-items-end">
-                    <Button type="submit" variant="primary" className="me-2">
-                      Search
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline-secondary"
-                      onClick={() => {
-                        setSearch('');
-                        setStatusFilter('');
-                        setCurrentPage(1);
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
+          <div className="d-flex justify-content-between align-items-center header-content">
+            <div className="header-text">
+              <h1 className="dashboard-title">DT TENDERS Dashboard</h1>
+              <p className="dashboard-subtitle">Manage and track all your tender projects</p>
+            </div>
+            <Button 
+              onClick={() => navigate('/projects/new')}
+              variant="primary"
+              className="new-project-btn"
+            >
+              <FiPlus className="me-2" /> New Project
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Stats Cards */}
+      <Row className="mb-4 stats-row">
+        <Col md={3} className="mb-3 mb-md-0">
+          <Card className="stats-card total-projects">
+            <Card.Body className="p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="card-title text-uppercase text-muted mb-1">Total Projects</h6>
+                  <h3 className="mb-0 text-primary">{pagination.total}</h3>
+                </div>
+                <div className="icon-shape bg-primary text-white rounded-circle p-3">
+                  <FiTrendingUp size={20} />
+                </div>
+              </div>
             </Card.Body>
           </Card>
-
-          {/* Stats Cards */}
-          <Row className="mb-4">
-            <Col md={3}>
-              <Card className="text-center">
-                <Card.Body>
-                  <h5>Total Projects</h5>
-                  <h3 className="text-primary">{pagination.total}</h3>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="text-center">
-                <Card.Body>
-                  <h5>In Progress</h5>
-                  <h3 className="text-warning">
+        </Col>
+        <Col md={3} className="mb-3 mb-md-0">
+          <Card className="stats-card in-progress">
+            <Card.Body className="p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="card-title text-uppercase text-muted mb-1">In Progress</h6>
+                  <h3 className="mb-0 text-warning">
                     {projects.filter(p => p.status === 'in_progress').length}
                   </h3>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="text-center">
-                <Card.Body>
-                  <h5>Completed</h5>
-                  <h3 className="text-success">
+                </div>
+                <div className="icon-shape bg-warning text-white rounded-circle p-3">
+                  <FiClock size={20} />
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3} className="mb-3 mb-md-0">
+          <Card className="stats-card completed">
+            <Card.Body className="p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="card-title text-uppercase text-muted mb-1">Completed</h6>
+                  <h3 className="mb-0 text-success">
                     {projects.filter(p => p.status === 'completed').length}
                   </h3>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="text-center">
-                <Card.Body>
-                  <h5>Your Role</h5>
-                  <h6 className="text-info">
-                    {user?.role === 'project_team' ? 'Project Team' :
-                     user?.role === 'finance_team' ? 'Finance Team' : 'General User'}
-                  </h6>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* Projects Table */}
-          <Card>
-            <Card.Header className="d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Projects</h5>
-              <Button 
-                onClick={() => window.location.href = '/projects/new'}
-                variant="primary"
-              >
-                Create New Project
-              </Button>
-            </Card.Header>
-            <Card.Body>
-              {loading ? (
-                <div className="text-center">
-                  <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
                 </div>
-              ) : projects.length === 0 ? (
-                <div className="text-center">
-                  <p>No projects found.</p>
-                  <Button 
-                    onClick={() => navigate('/projects/new')}
-                    variant="primary"
+                <div className="icon-shape bg-success text-white rounded-circle p-3">
+                  <FiCheckCircle size={20} />
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card className="stats-card user-role">
+            <Card.Body className="p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="card-title text-uppercase text-muted mb-1">Your Role</h6>
+                  <h6 className="mb-0 text-info">
+                    {user ? getRoleDisplay(user.role) : 'Loading...'}
+                  </h6>
+                </div>
+                <div className="icon-shape bg-info text-white rounded-circle p-3">
+                  <FiUser size={20} />
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Search and Filters */}
+      <Card className="mb-4 filter-card">
+        <Card.Body className="p-4">
+          <h5 className="card-title mb-4 d-flex align-items-center filter-title">
+            <FiFilter className="me-2" /> Filter Projects
+          </h5>
+          <Form onSubmit={handleSearch}>
+            <Row>
+              <Col md={8}>
+                <Form.Group className="mb-3 mb-md-0">
+                  <div className="input-group search-input-group">
+                    <span className="input-group-text">
+                      <FiSearch className="text-muted" />
+                    </span>
+                    <Form.Control
+                      type="text"
+                      placeholder="Search by tender name or site details..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="search-input"
+                    />
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group className="mb-3 mb-md-0">
+                  <Form.Select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="status-filter"
                   >
-                    Create Your First Project
+                    <option value="">All Statuses</option>
+                    <option value="draft">Draft</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <div className="d-flex filter-buttons">
+                  <Button type="submit" variant="primary" className="apply-filter-btn">
+                    Apply
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline-secondary"
+                    onClick={() => {
+                      setSearch('');
+                      setStatusFilter('');
+                      setCurrentPage(1);
+                    }}
+                    title="Reset filters"
+                    className="reset-filter-btn"
+                  >
+                    <FiRefreshCw />
                   </Button>
                 </div>
-              ) : (
-                <>
-                  <Table responsive striped hover>
-                    <thead>
-                      <tr>
-                        <th>Tender Name</th>
-                        <th>Site Details</th>
-                        <th>Status</th>
-                        <th>Progress</th>
-                        <th>Created By</th>
-                        <th>Created Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projects.map((project) => (
-                        <tr key={project._id}>
-                          <td>
-                            <Link 
-                              to={`/projects/${project._id}`}
-                              className="text-decoration-none"
-                            >
-                              {project.nameOfAwardedTender}
-                            </Link>
-                          </td>
-                          <td>{project.siteDetails}</td>
-                          <td>{getStatusBadge(project.status)}</td>
-                          <td>{getCompletionBadge(project)}</td>
-                          <td>
+              </Col>
+            </Row>
+          </Form>
+        </Card.Body>
+      </Card>
+
+      {/* Projects Table */}
+      <Card className="projects-table-card">
+        <Card.Header className="table-header">
+          <h5 className="mb-0">Projects</h5>
+        </Card.Header>
+        <Card.Body className="p-0">
+          {loading ? (
+            <div className="loading-container">
+              <div className="spinner"></div>
+              <p className="mt-3">Loading projects...</p>
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="empty-state">
+              <FiFilter size={48} className="empty-icon" />
+              <h5>No projects found</h5>
+              <p className="mb-4">Try adjusting your search or filter to find what you're looking for</p>
+              <Button 
+                onClick={() => navigate('/projects/new')}
+                variant="primary"
+                className="create-project-btn"
+              >
+                <FiPlus className="me-2" /> Create New Project
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="table-container">
+                <Table hover className="projects-table">
+                  <thead>
+                    <tr>
+                      <th>Tender Name</th>
+                      <th>Site Details</th>
+                      <th>Status</th>
+                      <th>Progress</th>
+                      <th>Created By</th>
+                      <th>Created Date</th>
+                      <th className="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projects.map((project) => (
+                      <tr key={project._id} className="project-row">
+                        <td>
+                          <Link 
+                            to={`/projects/${project._id}`}
+                            className="project-link"
+                          >
+                            {project.nameOfAwardedTender}
+                          </Link>
+                        </td>
+                        <td>{project.siteDetails}</td>
+                        <td>{getStatusBadge(project.status)}</td>
+                        <td>{getCompletionBadge(project)}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <div className="user-avatar">
+                              <FiUser size={14} />
+                            </div>
                             {project.createdBy?.username || 'Unknown User'}
-                          </td>
-                          <td>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <div className="date-icon">
+                              <FiCalendar size={14} />
+                            </div>
                             {new Date(project.createdAt).toLocaleDateString()}
-                          </td>
-                          <td>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
                             <Button
                               onClick={() => navigate(`/projects/${project._id}`)}
                               variant="outline-primary"
                               size="sm"
-                              className="me-1"
+                              className="action-btn view-btn"
+                              title="View project"
                             >
-                              View
+                              <FiEye size={14} />
                             </Button>
                             {canEditProject(project, 'part1') && (
                               <Button
                                 onClick={() => navigate(`/projects/${project._id}/edit/part1`)}
                                 variant="outline-primary"
                                 size="sm"
-                                className="me-1"
+                                className="action-btn edit-btn"
+                                title="Edit project details"
                               >
-                                Project
+                                <FiFileText size={14} />
                               </Button>
                             )}
                             {canEditProject(project, 'part2') && (
@@ -312,9 +444,10 @@ const Dashboard: React.FC = () => {
                                 onClick={() => navigate(`/projects/${project._id}/edit/part2`)}
                                 variant="outline-warning"
                                 size="sm"
-                                className="me-1"
+                                className="action-btn finance-btn"
+                                title="Edit finance details"
                               >
-                                Finance
+                                <FiDollarSign size={14} />
                               </Button>
                             )}
                             {canEditProject(project, 'part3') && (
@@ -322,9 +455,10 @@ const Dashboard: React.FC = () => {
                                 onClick={() => navigate(`/projects/${project._id}/edit/part3`)}
                                 variant="outline-info"
                                 size="sm"
-                                className="me-1"
+                                className="action-btn team-btn"
+                                title="Edit team details"
                               >
-                                Team
+                                <FiUsers size={14} />
                               </Button>
                             )}
                             {canEditProject(project, 'invoice_payment') && (
@@ -332,23 +466,25 @@ const Dashboard: React.FC = () => {
                                 onClick={() => navigate(`/projects/${project._id}/edit/invoice_payment`)}
                                 variant="outline-success"
                                 size="sm"
+                                className="action-btn invoice-btn"
+                                title="Edit invoice/payment"
                               >
-                                Invoice
+                                <FiFileText size={14} />
                               </Button>
                             )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                  
-                  {renderPagination()}
-                </>
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+              
+              {renderPagination()}
+            </>
+          )}
+        </Card.Body>
+      </Card>
     </Container>
   );
 };

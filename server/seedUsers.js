@@ -7,17 +7,50 @@ const predefinedUsers = [
   {
     username: 'project',
     password: 'project@123',
-    role: 'project_team'
+    role: 'project_team',
+    permissions: {
+      canViewAll: true,
+      canEditPart1: true,
+      canEditPart2: false,
+      canEditPart3: true,
+      canEditInvoicePayment: true
+    }
   },
   {
     username: 'finance',
     password: 'finance@321',
-    role: 'finance_team'
+    role: 'finance_team',
+    permissions: {
+      canViewAll: true,
+      canEditPart1: false,
+      canEditPart2: true,
+      canEditPart3: false,
+      canEditInvoicePayment: true
+    }
   },
   {
     username: 'deeptec',
     password: 'deeptec',
-    role: 'all_users'
+    role: 'all_users',
+    permissions: {
+      canViewAll: true,
+      canEditPart1: false,
+      canEditPart2: false,
+      canEditPart3: false,
+      canEditInvoicePayment: false
+    }
+  },
+  {
+    username: 'admin',
+    password: 'admin@2023',
+    role: 'admin',
+    permissions: {
+      canViewAll: true,
+      canEditPart1: true,
+      canEditPart2: true,
+      canEditPart3: true,
+      canEditInvoicePayment: true
+    }
   }
 ];
 

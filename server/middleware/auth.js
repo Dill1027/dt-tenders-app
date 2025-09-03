@@ -47,12 +47,54 @@ const authorize = (roles) => {
 // Project editing permissions middleware
 const canEditProject = (section) => {
   return (req, res, next) => {
-    const userRole = req.user.role;
+    const user = req.user;
+    
+    // First check if user has explicit permissions
+    if (user.permissions) {
+      switch (section) {
+        case 'part1':
+          if (!user.permissions.canEditPart1) {
+            return res.status(403).json({ 
+              message: 'Access denied. You do not have permission to edit this section.' 
+            });
+          }
+          break;
+        case 'part2':
+          if (!user.permissions.canEditPart2) {
+            return res.status(403).json({ 
+              message: 'Access denied. You do not have permission to edit this section.' 
+            });
+          }
+          break;
+        case 'part3':
+          if (!user.permissions.canEditPart3) {
+            return res.status(403).json({ 
+              message: 'Access denied. You do not have permission to edit this section.' 
+            });
+          }
+          break;
+        case 'invoice_payment':
+          if (!user.permissions.canEditInvoicePayment) {
+            return res.status(403).json({ 
+              message: 'Access denied. You do not have permission to edit this section.' 
+            });
+          }
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid section specified.' });
+      }
+      
+      next();
+      return;
+    }
+    
+    // Fallback to role-based permissions if specific permissions not set
+    const userRole = user.role;
     
     switch (section) {
       case 'part1':
         // Only project team can create/edit part 1 (project creation)
-        if (userRole !== 'project_team') {
+        if (userRole !== 'project_team' && userRole !== 'admin') {
           return res.status(403).json({ 
             message: 'Access denied. Only Project Team can edit this section.' 
           });
@@ -60,7 +102,7 @@ const canEditProject = (section) => {
         break;
       case 'part2':
         // Only finance team can edit part 2
-        if (userRole !== 'finance_team') {
+        if (userRole !== 'finance_team' && userRole !== 'admin') {
           return res.status(403).json({ 
             message: 'Access denied. Only Finance Team can edit this section.' 
           });
@@ -68,7 +110,7 @@ const canEditProject = (section) => {
         break;
       case 'part3':
         // Only project team can edit part 3
-        if (userRole !== 'project_team') {
+        if (userRole !== 'project_team' && userRole !== 'admin') {
           return res.status(403).json({ 
             message: 'Access denied. Only Project Team can edit this section.' 
           });
@@ -76,7 +118,7 @@ const canEditProject = (section) => {
         break;
       case 'invoice_payment':
         // Both project team and finance team can edit invoice & payment
-        if (userRole !== 'finance_team' && userRole !== 'project_team') {
+        if (userRole !== 'finance_team' && userRole !== 'project_team' && userRole !== 'admin') {
           return res.status(403).json({ 
             message: 'Access denied. Only Project Team and Finance Team can edit this section.' 
           });
