@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check endpoint
+// Health check endpoint (accessible without auth)
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
