@@ -313,14 +313,11 @@ const Dashboard: React.FC = () => {
               <Col md={2}>
                 <Form.Group className="mb-3 mb-md-0">
                   <Form.Label htmlFor="status-filter" className="visually-hidden">Filter by Status</Form.Label>
-                  <span id="status-filter-label" className="visually-hidden">Filter projects by status</span>
                   <Form.Select
                     id="status-filter"
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                     className="status-filter"
-                    aria-label="Filter projects by status"
-                    title="Filter projects by status"
                     aria-labelledby="status-filter-label"
                     name="statusFilter"
                   >

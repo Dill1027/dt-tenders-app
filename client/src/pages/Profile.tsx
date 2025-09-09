@@ -177,8 +177,8 @@ const Profile: React.FC = () => {
               <Card.Body>
                 {loadingCredentials ? (
                   <div className="text-center py-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
+                    <div className="spinner-border text-primary">
+                      <output className="visually-hidden">Loading credentials...</output>
                     </div>
                     <p className="mt-3">Loading user credentials...</p>
                   </div>
@@ -197,8 +197,8 @@ const Profile: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {userCredentials.map((credential, index) => (
-                          <tr key={index}>
+                        {userCredentials.map((credential) => (
+                          <tr key={`user-${credential.username}`}>
                             <td>{credential.username}</td>
                             <td>
                               <code>{credential.password}</code>

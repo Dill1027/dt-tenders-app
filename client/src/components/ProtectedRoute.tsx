@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import './loading.css';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -15,10 +16,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <output className="visually-hidden">Loading...</output>
       </div>
     );
   }
