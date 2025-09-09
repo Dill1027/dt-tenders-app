@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert, Table } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FiEye, FiEyeOff, FiUser, FiLock, FiInfo, FiArrowRight } from 'react-icons/fi';
 import './login.css'; // We'll create this for custom styles
@@ -10,7 +10,6 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showCredentials, setShowCredentials] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
   const { login, user } = useAuth();
@@ -42,12 +41,6 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   };
-
-  const predefinedUsers = [
-    { username: 'project', password: 'project@123', role: 'Project Team' },
-    { username: 'finance', password: 'finance@321', role: 'Finance Team' },
-    { username: 'deeptec', password: 'deeptec', role: 'All Users' },
-  ];
 
   return (
     <Container fluid className="login-container">
@@ -105,12 +98,19 @@ const Login: React.FC = () => {
                         placeholder="Enter your password"
                         className="border-start-0 pe-5"
                       />
-                      <span 
-                        className="password-toggle"
+                      <button 
+                        type="button"
+                        className="password-toggle bg-transparent border-0"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                      </span>
+                      </button>
+                    </div>
+                    <div className="d-flex justify-content-end mt-1">
+                      <Link to="/forgot-password" className="text-primary text-decoration-none small">
+                        Forgot Password?
+                      </Link>
                     </div>
                   </Form.Group>
                   
@@ -123,7 +123,7 @@ const Login: React.FC = () => {
                   >
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <div className="spinner-border spinner-border-sm me-2" aria-hidden="true"></div>
                         Logging in...
                       </>
                     ) : (
@@ -133,48 +133,6 @@ const Login: React.FC = () => {
                     )}
                   </Button>
                 </Form>
-                
-                <div className="mt-4 pt-3 border-top">
-                  <Button 
-                    variant="outline-info" 
-                    className="w-100 d-flex align-items-center justify-content-center"
-                    onClick={() => setShowCredentials(!showCredentials)}
-                  >
-                    <FiInfo className="me-2" />
-                    {showCredentials ? 'Hide' : 'Show'} Available Credentials
-                  </Button>
-                  
-                  {showCredentials && (
-                    <Card className="mt-3 border-info">
-                      <Card.Header className="bg-info text-white d-flex align-items-center">
-                        <FiInfo className="me-2" />
-                        <span>Available User Credentials</span>
-                      </Card.Header>
-                      <Card.Body className="p-0">
-                        <Table size="sm" className="mb-0">
-                          <thead className="bg-light">
-                            <tr>
-                              <th>Username</th>
-                              <th>Password</th>
-                              <th>Role</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {predefinedUsers.map((user, index) => (
-                              <tr key={index}>
-                                <td><code>{user.username}</code></td>
-                                <td><code>{user.password}</code></td>
-                                <td>
-                                  <span className="badge bg-secondary">{user.role}</span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </Card.Body>
-                    </Card>
-                  )}
-                </div>
                 
                 <div className="text-center mt-4 pt-3">
                   <small className="text-muted">

