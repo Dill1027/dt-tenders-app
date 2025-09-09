@@ -16,37 +16,63 @@ export interface User {
   updatedAt?: string;
 }
 
+export interface LoginData {
+  username: string;
+  password: string;
+}
+
+export interface PasswordChangeData {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword?: string;  // For client-side validation only
+}
+
+export interface PasswordResetRequestData {
+  username: string;
+}
+
+export interface PasswordResetData {
+  username: string;
+  resetCode: string;
+  newPassword: string;
+  confirmNewPassword?: string;  // For client-side validation only
+}
+
+// Common type aliases
+export type YesNo = 'Yes' | 'No';
+export type YesNoNA = 'Yes' | 'No' | 'N/A';
+
 export interface Project {
   _id: string;
   // Part 1 - Project Creation
   nameOfAwardedTender: string;
-  performanceBondSubmission: 'Yes' | 'No' | 'N/A';
-  agreementSigned: 'Yes' | 'No' | 'N/A';
+  performanceBondSubmission: YesNoNA;
+  agreementSigned: YesNoNA;
   siteDetails: string;
-  createProjectInDislio: 'Yes' | 'No';
+  createProjectInDislio: YesNo;
   noteForFinanceTeam_part1: string;
   
   // Part 2 - Finance Section
-  checkWithStoreManager: 'Yes' | 'No';
+  checkWithStoreManager: YesNo;
   readyOrNot: boolean;
   purchasingNote: string;
   noteForFinanceTeam_part2: string;
   
   // Part 3 - Project Team Section
-  selectTeam: 'Company' | 'Subcontractor';
+  selectTeam: TeamType;
   structurePanel: string;
   timeline: string;
   siteInstallationNote: string;
   noteForFinanceTeam_part3: string;
   
   // Invoice & Payment
-  invoiceCreate: 'Done' | 'Not Yet';
-  paymentStatus: 'Done' | 'Half' | 'None' | '80%' | '20%';
+  invoiceCreate: InvoiceStatus;
+  paymentStatus: PaymentStatus;
   
   // Metadata
   createdBy: User;
   lastModifiedBy?: User;
-  status: 'draft' | 'in_progress' | 'completed' | 'cancelled';
+  status: ProjectStatus;
   part1Completed: boolean;
   part2Completed: boolean;
   part3Completed: boolean;
@@ -75,29 +101,35 @@ export interface LoginData {
 export interface ProjectFormData {
   // Part 1
   nameOfAwardedTender?: string;
-  performanceBondSubmission?: 'Yes' | 'No' | 'N/A';
-  agreementSigned?: 'Yes' | 'No' | 'N/A';
+  performanceBondSubmission?: YesNoNA;
+  agreementSigned?: YesNoNA;
   siteDetails?: string;
-  createProjectInDislio?: 'Yes' | 'No';
+  createProjectInDislio?: YesNo;
   noteForFinanceTeam_part1?: string;
   
   // Part 2
-  checkWithStoreManager?: 'Yes' | 'No';
+  checkWithStoreManager?: YesNo;
   readyOrNot?: boolean;
   purchasingNote?: string;
   noteForFinanceTeam_part2?: string;
   
   // Part 3
-  selectTeam?: 'Company' | 'Subcontractor';
+  selectTeam?: TeamType;
   structurePanel?: string;
   timeline?: string;
   siteInstallationNote?: string;
   noteForFinanceTeam_part3?: string;
   
   // Invoice & Payment
-  invoiceCreate?: 'Done' | 'Not Yet';
-  paymentStatus?: 'Done' | 'Half' | 'None' | '80%' | '20%';
+  invoiceCreate?: InvoiceStatus;
+  paymentStatus?: PaymentStatus;
 }
+
+// More type aliases
+export type TeamType = 'Company' | 'Subcontractor';
+export type InvoiceStatus = 'Done' | 'Not Yet';
+export type PaymentStatus = 'Done' | 'Half' | 'None' | '80%' | '20%';
+export type ProjectStatus = 'draft' | 'in_progress' | 'completed' | 'cancelled';
 
 export interface ApiResponse<T = any> {
   message: string;

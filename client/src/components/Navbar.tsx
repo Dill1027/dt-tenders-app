@@ -57,6 +57,9 @@ const Navbar: React.FC = () => {
                 <small className="text-muted">Role: {getRoleDisplayName(user.role)}</small>
               </NavDropdown.Item>
               <NavDropdown.Divider />
+              <NavDropdown.Item as={Link} to="/profile">
+                My Profile
+              </NavDropdown.Item>
               <NavDropdown.Item onClick={handleLogout}>
                 Logout
               </NavDropdown.Item>

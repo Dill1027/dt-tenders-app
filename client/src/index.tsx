@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './styles/variables.css'; // CSS Variables for theming
 import './index.css';
+import './styles/utilities.css'; // Global utility styles
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

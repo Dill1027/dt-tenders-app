@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Badge, Pagination, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Button, Form, Badge, Pagination } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { Project, ProjectsResponse } from '../types';
 import { projectsAPI } from '../services/api';
@@ -21,7 +21,8 @@ import {
   FiUser,
   FiCalendar
 } from 'react-icons/fi';
-import './Dashboard.css'; // We'll create this CSS file
+import './Dashboard.css'; // Dashboard-specific styles
+import '../components/progressBar.css'; // Progress bar styles
 
 const Dashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -41,6 +42,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, search, statusFilter]);
 
   const fetchProjects = async () => {
@@ -93,12 +95,12 @@ const Dashboard: React.FC = () => {
 
     return (
       <div className="d-flex align-items-center">
-        <div className="progress me-2 progress-bar-custom" role="progressbar">
-          <div 
-            className={`progress-bar-filled bg-${variant}`} 
-            style={{ width: `${percentage}%` }}
-          ></div>
-        </div>
+        <progress 
+          className={`progress-bar-custom me-2 progress-${variant}`}
+          value={percentage} 
+          max="100"
+          aria-label={`Project completion: ${percentage}%`}
+        ></progress>
         <small className="text-muted">{completed}/{total} ({percentage}%)</small>
       </div>
     );
@@ -310,10 +312,17 @@ const Dashboard: React.FC = () => {
               </Col>
               <Col md={2}>
                 <Form.Group className="mb-3 mb-md-0">
+                  <Form.Label htmlFor="status-filter" className="visually-hidden">Filter by Status</Form.Label>
+                  <span id="status-filter-label" className="visually-hidden">Filter projects by status</span>
                   <Form.Select
+                    id="status-filter"
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                     className="status-filter"
+                    aria-label="Filter projects by status"
+                    title="Filter projects by status"
+                    aria-labelledby="status-filter-label"
+                    name="statusFilter"
                   >
                     <option value="">All Statuses</option>
                     <option value="draft">Draft</option>
@@ -354,12 +363,14 @@ const Dashboard: React.FC = () => {
           <h5 className="mb-0">Projects</h5>
         </Card.Header>
         <Card.Body className="p-0">
-          {loading ? (
+          {loading && (
             <div className="loading-container">
               <div className="spinner"></div>
               <p className="mt-3">Loading projects...</p>
             </div>
-          ) : projects.length === 0 ? (
+          )}
+          
+          {!loading && projects.length === 0 && (
             <div className="empty-state">
               <FiFilter size={48} className="empty-icon" />
               <h5>No projects found</h5>
@@ -372,7 +383,9 @@ const Dashboard: React.FC = () => {
                 <FiPlus className="me-2" /> Create New Project
               </Button>
             </div>
-          ) : (
+          )}
+          
+          {!loading && projects.length > 0 && (
             <>
               <div className="table-container">
                 <Table hover className="projects-table">

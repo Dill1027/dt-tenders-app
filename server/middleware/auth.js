@@ -32,10 +32,13 @@ const authorize = (roles) => {
       return res.status(401).json({ message: 'Access denied. User not authenticated.' });
     }
 
-    if (!roles.includes(req.user.role)) {
+    // Check if roles is an array or a single role string
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+
+    if (!roleArray.includes(req.user.role)) {
       return res.status(403).json({ 
         message: 'Access denied. Insufficient permissions.',
-        requiredRoles: roles,
+        requiredRoles: roleArray,
         userRole: req.user.role
       });
     }
@@ -49,83 +52,60 @@ const canEditProject = (section) => {
   return (req, res, next) => {
     const user = req.user;
     
+    // Helper function to send access denied response
+    const denyAccess = (message) => {
+      return res.status(403).json({ 
+        message: message || 'Access denied. You do not have permission to edit this section.' 
+      });
+    };
+    
+    // Check for invalid section early
+    if (!['part1', 'part2', 'part3', 'invoice_payment'].includes(section)) {
+      return res.status(400).json({ message: 'Invalid section specified.' });
+    }
+    
     // First check if user has explicit permissions
     if (user.permissions) {
-      switch (section) {
-        case 'part1':
-          if (!user.permissions.canEditPart1) {
-            return res.status(403).json({ 
-              message: 'Access denied. You do not have permission to edit this section.' 
-            });
-          }
-          break;
-        case 'part2':
-          if (!user.permissions.canEditPart2) {
-            return res.status(403).json({ 
-              message: 'Access denied. You do not have permission to edit this section.' 
-            });
-          }
-          break;
-        case 'part3':
-          if (!user.permissions.canEditPart3) {
-            return res.status(403).json({ 
-              message: 'Access denied. You do not have permission to edit this section.' 
-            });
-          }
-          break;
-        case 'invoice_payment':
-          if (!user.permissions.canEditInvoicePayment) {
-            return res.status(403).json({ 
-              message: 'Access denied. You do not have permission to edit this section.' 
-            });
-          }
-          break;
-        default:
-          return res.status(400).json({ message: 'Invalid section specified.' });
+      const permissionMap = {
+        'part1': user.permissions.canEditPart1,
+        'part2': user.permissions.canEditPart2,
+        'part3': user.permissions.canEditPart3,
+        'invoice_payment': user.permissions.canEditInvoicePayment
+      };
+      
+      if (!permissionMap[section]) {
+        return denyAccess();
       }
       
-      next();
-      return;
+      // If they have permission, proceed
+      return next();
     }
     
     // Fallback to role-based permissions if specific permissions not set
     const userRole = user.role;
+    const isAdmin = userRole === 'admin';
+    const isProjectTeam = userRole === 'project_team';
+    const isFinanceTeam = userRole === 'finance_team';
     
-    switch (section) {
-      case 'part1':
-        // Only project team can create/edit part 1 (project creation)
-        if (userRole !== 'project_team' && userRole !== 'admin') {
-          return res.status(403).json({ 
-            message: 'Access denied. Only Project Team can edit this section.' 
-          });
-        }
-        break;
-      case 'part2':
-        // Only finance team can edit part 2
-        if (userRole !== 'finance_team' && userRole !== 'admin') {
-          return res.status(403).json({ 
-            message: 'Access denied. Only Finance Team can edit this section.' 
-          });
-        }
-        break;
-      case 'part3':
-        // Only project team can edit part 3
-        if (userRole !== 'project_team' && userRole !== 'admin') {
-          return res.status(403).json({ 
-            message: 'Access denied. Only Project Team can edit this section.' 
-          });
-        }
-        break;
-      case 'invoice_payment':
-        // Both project team and finance team can edit invoice & payment
-        if (userRole !== 'finance_team' && userRole !== 'project_team' && userRole !== 'admin') {
-          return res.status(403).json({ 
-            message: 'Access denied. Only Project Team and Finance Team can edit this section.' 
-          });
-        }
-        break;
-      default:
-        return res.status(400).json({ message: 'Invalid section specified.' });
+    // Define access rules for each section
+    const accessRules = {
+      'part1': isAdmin || isProjectTeam,
+      'part2': isAdmin || isFinanceTeam,
+      'part3': isAdmin || isProjectTeam,
+      'invoice_payment': isAdmin || isProjectTeam || isFinanceTeam
+    };
+    
+    // Check if user has access
+    if (!accessRules[section]) {
+      // Custom error messages based on section
+      const errorMessages = {
+        'part1': 'Access denied. Only Project Team can edit this section.',
+        'part2': 'Access denied. Only Finance Team can edit this section.',
+        'part3': 'Access denied. Only Project Team can edit this section.',
+        'invoice_payment': 'Access denied. Only Project Team and Finance Team can edit this section.'
+      };
+      
+      return denyAccess(errorMessages[section]);
     }
     
     next();

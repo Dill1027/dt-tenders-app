@@ -17,7 +17,7 @@ import {
   FiLock,
   FiEye
 } from 'react-icons/fi';
-import './projectForm.css'; // We'll create this for custom styles
+import './ProjectForm.css'; // Corrected case to match the actual file
 
 const ProjectForm: React.FC = () => {
   const [formData, setFormData] = useState<ProjectFormData>({});
@@ -785,7 +785,9 @@ const ProjectForm: React.FC = () => {
                     >
                       {loading ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                          <output className="spinner-border spinner-border-sm me-2" aria-label="Saving">
+                            <span className="visually-hidden">Saving...</span>
+                          </output>
                           Saving...
                         </>
                       ) : (

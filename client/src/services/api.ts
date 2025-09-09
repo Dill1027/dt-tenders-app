@@ -29,7 +29,7 @@ api.interceptors.response.use(
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
-    return Promise.reject(error);
+    return Promise.reject(new Error(error.message || 'An error occurred'));
   }
 );
 
@@ -49,6 +49,21 @@ export const authAPI = {
     const response: AxiosResponse = await api.post('/auth/refresh');
     return response.data;
   },
+  
+  changePassword: async (data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> => {
+    const response: AxiosResponse = await api.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  forgotPassword: async (username: string): Promise<{ message: string; resetCode?: string }> => {
+    const response: AxiosResponse = await api.post('/auth/forgot-password', { username });
+    return response.data;
+  },
+
+  resetPassword: async (data: { username: string; resetCode: string; newPassword: string }): Promise<{ message: string }> => {
+    const response: AxiosResponse = await api.post('/auth/reset-password', data);
+    return response.data;
+  }
 };
 
 // Projects API
@@ -123,6 +138,14 @@ export const usersAPI = {
     const response: AxiosResponse = await api.get('/users/stats/overview');
     return response.data;
   },
+};
+
+// Admin API
+export const adminAPI = {
+  getUsersCredentials: async (): Promise<Array<{ username: string; password: string; role: string }>> => {
+    const response: AxiosResponse = await api.get('/admin/users-credentials');
+    return response.data;
+  }
 };
 
 export default api;

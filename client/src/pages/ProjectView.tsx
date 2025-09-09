@@ -16,7 +16,7 @@ import {
   FiInfo,
   FiLock
 } from 'react-icons/fi';
-import './projectView.css'; // Make sure filename matches exactly with lowercase p
+import './ProjectView.css'; // Corrected case to match the actual file
 
 const ProjectView: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
@@ -91,7 +91,7 @@ const ProjectView: React.FC = () => {
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
     return (
-      <Badge bg={config.variant} className="d-flex align-items-center px-3 py-2">
+      <Badge bg={config.variant} className="status-badge d-flex align-items-center">
         {config.icon}
         {config.text}
       </Badge>
@@ -108,8 +108,8 @@ const ProjectView: React.FC = () => {
     if (value === undefined || value === null || value === '') {
       return (
         <div className="detail-item">
-          <dt className="detail-label">{label}:</dt>
-          <dd className="detail-value text-muted">Not specified</dd>
+          <div className="detail-label">{label}:</div>
+          <div className="detail-value text-muted">Not specified</div>
         </div>
       );
     }
@@ -117,12 +117,12 @@ const ProjectView: React.FC = () => {
     if (type === 'boolean') {
       return (
         <div className="detail-item">
-          <dt className="detail-label">{label}:</dt>
-          <dd className="detail-value">
-            <Badge bg={value ? 'success' : 'secondary'} className="px-2 py-1">
+          <div className="detail-label">{label}:</div>
+          <div className="detail-value">
+            <Badge bg={value ? 'success' : 'secondary'} className="status-badge px-2 py-1">
               {value ? 'Yes' : 'No'}
             </Badge>
-          </dd>
+          </div>
         </div>
       );
     }
@@ -130,22 +130,22 @@ const ProjectView: React.FC = () => {
     if (type === 'note') {
       return (
         <div className="detail-item">
-          <dt className="detail-label">{label}:</dt>
-          <dd className="detail-value">
-            <Card className="bg-light border-0">
+          <div className="detail-label">{label}:</div>
+          <div className="detail-value">
+            <Card className="project-card">
               <Card.Body className="py-2">
                 <p className="mb-0">{value}</p>
               </Card.Body>
             </Card>
-          </dd>
+          </div>
         </div>
       );
     }
 
     return (
       <div className="detail-item">
-        <dt className="detail-label">{label}:</dt>
-        <dd className="detail-value">{value}</dd>
+        <div className="detail-label">{label}:</div>
+        <div className="detail-value">{value}</div>
       </div>
     );
   };
@@ -153,9 +153,9 @@ const ProjectView: React.FC = () => {
   const renderSectionHeader = (title: string, completed: boolean, section: string) => {
     return (
       <div className="d-flex justify-content-between align-items-center">
-        <h5 className="mb-0">{title}</h5>
+        <h5 className="mb-0 fw-bold">{title}</h5>
         <div className="d-flex align-items-center">
-          <Badge bg={completed ? 'success' : 'warning'} className="me-2 px-3 py-2">
+          <Badge bg={completed ? 'success' : 'warning'} className="status-badge me-2">
             {completed ? (
               <span className="d-flex align-items-center">
                 <FiCheckCircle className="me-1" />
@@ -173,7 +173,7 @@ const ProjectView: React.FC = () => {
               size="sm"
               variant="outline-primary"
               onClick={() => navigate(`/projects/${project!._id}/edit/${section}`)}
-              className="d-flex align-items-center"
+              className="project-btn project-btn-outline d-flex align-items-center"
             >
               <FiEdit className="me-1" />
               Edit
@@ -186,11 +186,11 @@ const ProjectView: React.FC = () => {
 
   if (loading) {
     return (
-      <Container fluid="lg" className="py-4">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
+      <Container fluid="lg" className="project-view-container py-4">
+        <div className="text-center py-5 fade-in">
+          <output className="loading-spinner mx-auto" aria-label="Loading">
             <span className="visually-hidden">Loading...</span>
-          </div>
+          </output>
           <p className="mt-3 text-muted">Loading project details...</p>
         </div>
       </Container>
@@ -199,12 +199,14 @@ const ProjectView: React.FC = () => {
 
   if (!project) {
     return (
-      <Container fluid="lg" className="py-4">
-        <div className="text-center py-5">
-          <FiInfo size={48} className="text-muted mb-3" />
+      <Container fluid="lg" className="project-view-container py-4">
+        <div className="text-center py-5 slide-in-up">
+          <div className="icon-wrapper mx-auto mb-3">
+            <FiInfo size={32} />
+          </div>
           <h4>Project not found</h4>
           <p className="text-muted mb-4">The project you're looking for doesn't exist or you don't have access to it.</p>
-          <Button onClick={() => navigate('/dashboard')} variant="primary" className="d-flex align-items-center mx-auto">
+          <Button onClick={() => navigate('/dashboard')} variant="primary" className="project-btn d-flex align-items-center mx-auto">
             <FiArrowLeft className="me-2" />
             Back to Dashboard
           </Button>
@@ -214,27 +216,26 @@ const ProjectView: React.FC = () => {
   }
 
   return (
-    <Container fluid="lg" className="py-4">
+    <Container fluid="lg" className="project-view-container py-4">
       {/* Header Section */}
       <Row className="mb-4">
         <Col>
-          <div className="d-flex justify-content-between align-items-start">
-            <div>
-              <Button
-                onClick={() => navigate('/dashboard')}
-                variant="outline-secondary"
-                className="d-flex align-items-center mb-3"
-              >
-                <FiArrowLeft className="me-2" />
-                Back to Dashboard
-              </Button>
-              <h1 className="h2 mb-2">{project.nameOfAwardedTender}</h1>
-              <p className="text-muted mb-0">{project.siteDetails}</p>
-            </div>
-            <div className="text-end">
+          <div className="project-header fade-in">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              variant="outline-light"
+              className="project-btn project-btn-outline d-flex align-items-center mb-3"
+            >
+              <FiArrowLeft className="me-2" />
+              Back to Dashboard
+            </Button>
+            <h1 className="project-title">{project.nameOfAwardedTender}</h1>
+            <p className="project-subtitle">{project.siteDetails}</p>
+            
+            <div className="d-flex align-items-center mt-4">
               {getStatusBadge(project.status)}
-              <div className="mt-2">
-                <small className="text-muted">Project ID: {project._id}</small>
+              <div className="ms-auto">
+                <small className="text-light opacity-75">Project ID: {project._id}</small>
               </div>
             </div>
           </div>
@@ -244,28 +245,29 @@ const ProjectView: React.FC = () => {
       {/* Progress Bar */}
       <Row className="mb-4">
         <Col>
-          <Card className="border-0 shadow-sm">
+          <Card className="progress-container slide-in-up">
             <Card.Body className="py-3">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="mb-0">Project Completion</h6>
-                <span className="text-muted">{getCompletionProgress()}%</span>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="mb-0 fw-bold">Project Completion</h5>
+                <span className="fs-5 fw-bold">{getCompletionProgress()}%</span>
               </div>
               <ProgressBar 
                 now={getCompletionProgress()} 
-                variant={getCompletionProgress() === 100 ? 'success' : 'primary'}
-                className="mb-2"
-                style={{ height: '8px' }}
+                className="custom-progress mb-3"
               />
               <div className="d-flex justify-content-between">
-                <small className="text-muted">
-                  Part 1: {project.part1Completed ? '✅' : '⏳'}
-                </small>
-                <small className="text-muted">
-                  Part 2: {project.part2Completed ? '✅' : '⏳'}
-                </small>
-                <small className="text-muted">
-                  Part 3: {project.part3Completed ? '✅' : '⏳'}
-                </small>
+                <div className="d-flex align-items-center">
+                  <FiCheckCircle className="me-2" />
+                  <span>Part 1: {project.part1Completed ? 'Completed' : 'In Progress'}</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <FiCheckCircle className="me-2" />
+                  <span>Part 2: {project.part2Completed ? 'Completed' : 'In Progress'}</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <FiCheckCircle className="me-2" />
+                  <span>Part 3: {project.part3Completed ? 'Completed' : 'In Progress'}</span>
+                </div>
               </div>
             </Card.Body>
           </Card>
@@ -275,40 +277,48 @@ const ProjectView: React.FC = () => {
       <Row>
         <Col lg={4} className="mb-4">
           {/* Project Metadata Card */}
-          <Card className="h-100 border-0 shadow-sm">
-            <Card.Header className="bg-white">
+          <Card className="project-card hover-lift fade-in h-100">
+            <Card.Header>
               <h6 className="mb-0">Project Overview</h6>
             </Card.Header>
             <Card.Body>
               <div className="detail-list">
                 <div className="detail-item">
-                  <dt className="detail-label">Created By</dt>
-                  <dd className="detail-value d-flex align-items-center">
-                    <FiUser className="me-2 text-muted" />
+                  <div className="detail-label">Created By</div>
+                  <div className="detail-value d-flex align-items-center">
+                    <div className="icon-wrapper small me-2">
+                      <FiUser size={14} />
+                    </div>
                     {project.createdBy?.username || 'Unknown User'}
-                  </dd>
+                  </div>
                 </div>
                 <div className="detail-item">
-                  <dt className="detail-label">Created Date</dt>
-                  <dd className="detail-value d-flex align-items-center">
-                    <FiCalendar className="me-2 text-muted" />
+                  <div className="detail-label">Created Date</div>
+                  <div className="detail-value d-flex align-items-center">
+                    <div className="icon-wrapper small me-2">
+                      <FiCalendar size={14} />
+                    </div>
                     {new Date(project.createdAt).toLocaleDateString()}
-                  </dd>
+                  </div>
                 </div>
                 <div className="detail-item">
-                  <dt className="detail-label">Last Modified</dt>
-                  <dd className="detail-value d-flex align-items-center">
-                    <FiCalendar className="me-2 text-muted" />
+                  <div className="detail-label">Last Modified</div>
+                  <div className="detail-value d-flex align-items-center">
+                    <div className="icon-wrapper small me-2">
+                      <FiCalendar size={14} />
+                    </div>
                     {new Date(project.updatedAt).toLocaleDateString()}
-                  </dd>
+                  </div>
                 </div>
                 {project.lastModifiedBy && (
                   <div className="detail-item">
-                    <dt className="detail-label">Last Modified By</dt>
-                    <dd className="detail-value d-flex align-items-center">
-                      <FiUser className="me-2 text-muted" />
+                    <div className="detail-label">Last Modified By</div>
+                    <div className="detail-value d-flex align-items-center">
+                      <div className="icon-wrapper small me-2">
+                        <FiUser size={14} />
+                      </div>
                       {project.lastModifiedBy.username}
-                    </dd>
+                    </div>
                   </div>
                 )}
               </div>
@@ -318,8 +328,8 @@ const ProjectView: React.FC = () => {
 
         <Col lg={8}>
           {/* Part 1 - Project Creation */}
-          <Card className="mb-4 border-0 shadow-sm">
-            <Card.Header className="bg-white py-3">
+          <Card className="project-card hover-lift fade-in mb-4">
+            <Card.Header className="py-3">
               {renderSectionHeader('Project Information', project.part1Completed, 'part1')}
             </Card.Header>
             <Card.Body>
@@ -347,8 +357,8 @@ const ProjectView: React.FC = () => {
           </Card>
 
           {/* Part 2 - Finance Section */}
-          <Card className="mb-4 border-0 shadow-sm">
-            <Card.Header className="bg-white py-3">
+          <Card className="project-card hover-lift fade-in mb-4">
+            <Card.Header className="py-3">
               {renderSectionHeader('Finance Details', project.part2Completed, 'part2')}
             </Card.Header>
             <Card.Body>
@@ -380,8 +390,8 @@ const ProjectView: React.FC = () => {
           </Card>
 
           {/* Part 3 - Project Team Section */}
-          <Card className="mb-4 border-0 shadow-sm">
-            <Card.Header className="bg-white py-3">
+          <Card className="project-card hover-lift fade-in mb-4">
+            <Card.Header className="py-3">
               {renderSectionHeader('Team Details', project.part3Completed, 'part3')}
             </Card.Header>
             <Card.Body>
@@ -414,16 +424,16 @@ const ProjectView: React.FC = () => {
           </Card>
 
           {/* Invoice & Payment Section */}
-          <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white py-3">
+          <Card className="project-card hover-lift fade-in mb-4">
+            <Card.Header className="py-3">
               <div className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Invoice & Payment</h5>
                 {canEditSection('invoice_payment') && (
                   <Button
                     size="sm"
                     variant="outline-primary"
+                    className="project-btn project-btn-outline d-flex align-items-center"
                     onClick={() => navigate(`/projects/${project._id}/edit/invoice_payment`)}
-                    className="d-flex align-items-center"
                   >
                     <FiEdit className="me-1" />
                     Edit
