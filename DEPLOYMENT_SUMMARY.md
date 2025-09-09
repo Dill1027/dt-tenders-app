@@ -6,8 +6,20 @@ The DT TENDERS application has been successfully deployed to Vercel on September
 
 ### Application URLs
 
-- **Frontend Application:** [https://frontend-b9qih9zbm-dill1027s-projects.vercel.app](https://frontend-b9qih9zbm-dill1027s-projects.vercel.app)
-- **Backend API:** [https://backend-8e8si7hdk-dill1027s-projects.vercel.app](https://backend-8e8si7hdk-dill1027s-projects.vercel.app)
+- **Frontend Application:** [https://frontend-gzp9nipy7-dill1027s-projects.vercel.app](https://frontend-gzp9nipy7-dill1027s-projects.vercel.app)
+- **Backend API:** [https://backend-zfknt0bs8-dill1027s-projects.vercel.app](https://backend-zfknt0bs8-dill1027s-projects.vercel.app)
+- **API Root Endpoint:** [https://backend-zfknt0bs8-dill1027s-projects.vercel.app/](https://backend-zfknt0bs8-dill1027s-projects.vercel.app/) (Returns available endpoints)
+- **API Health Check:** [https://backend-zfknt0bs8-dill1027s-projects.vercel.app/api/health](https://backend-zfknt0bs8-dill1027s-projects.vercel.app/api/health)
+
+### Important Note
+
+To use the application successfully, you need to disable Protection in Vercel:
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Select your backend project
+3. Go to Settings → Security
+4. In the 'Authentication' section, toggle off 'Protection'
+5. Save the changes
 
 ## Post-Deployment Verification
 
