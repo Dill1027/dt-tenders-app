@@ -6,10 +6,10 @@ The DT TENDERS application has been successfully deployed to Vercel on September
 
 ### Application URLs
 
-- **Frontend Application:** [https://frontend-c3sxhrnre-dill1027s-projects.vercel.app](https://frontend-c3sxhrnre-dill1027s-projects.vercel.app)
-- **Backend API:** [https://backend-zfknt0bs8-dill1027s-projects.vercel.app](https://backend-zfknt0bs8-dill1027s-projects.vercel.app)
-- **API Root Endpoint:** [https://backend-zfknt0bs8-dill1027s-projects.vercel.app/](https://backend-zfknt0bs8-dill1027s-projects.vercel.app/) (Returns available endpoints)
-- **API Health Check:** [https://backend-zfknt0bs8-dill1027s-projects.vercel.app/api/health](https://backend-zfknt0bs8-dill1027s-projects.vercel.app/api/health)
+- **Frontend Application:** [https://frontend-pi-wine-91.vercel.app](https://frontend-pi-wine-91.vercel.app)
+- **Backend API:** [https://backend-rho-ten-64.vercel.app](https://backend-rho-ten-64.vercel.app)
+- **API Root Endpoint:** [https://backend-rho-ten-64.vercel.app/](https://backend-rho-ten-64.vercel.app/) (Returns available endpoints)
+- **API Health Check:** [https://backend-rho-ten-64.vercel.app/api/health](https://backend-rho-ten-64.vercel.app/api/health)
 
 ### Important Note
 

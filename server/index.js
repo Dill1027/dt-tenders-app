@@ -20,7 +20,8 @@ const allowedOrigins = [
   'http://localhost:3003', 
   'http://localhost:3004', 
   'http://localhost:3005',
-  'https://frontend-b9qih9zbm-dill1027s-projects.vercel.app', // Replace with your actual client domain when deployed
+  'https://frontend-pi-wine-91.vercel.app', // Custom domain alias
+  'https://frontend-c3sxhrnre-dill1027s-projects.vercel.app',
   'https://frontend-b9qih9zbm-dill1027s-projects.vercel.app'
 ];
 

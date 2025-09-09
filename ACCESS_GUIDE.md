@@ -6,8 +6,8 @@ The DT TENDERS application has been deployed to Vercel and is now accessible wit
 
 ### Direct Access URLs
 
-- **Frontend Application:** [https://frontend-b9qih9zbm-dill1027s-projects.vercel.app](https://frontend-b9qih9zbm-dill1027s-projects.vercel.app)
-- **Backend API:** [https://backend-8e8si7hdk-dill1027s-projects.vercel.app](https://backend-8e8si7hdk-dill1027s-projects.vercel.app)
+- **Frontend Application:** [https://frontend-pi-wine-91.vercel.app](https://frontend-pi-wine-91.vercel.app)
+- **Backend API:** [https://backend-rho-ten-64.vercel.app](https://backend-rho-ten-64.vercel.app)
 
 Simply open the frontend URL in your browser to access the application.
 
