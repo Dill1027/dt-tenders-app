@@ -20,8 +20,8 @@ const allowedOrigins = [
   'http://localhost:3003', 
   'http://localhost:3004', 
   'http://localhost:3005',
-  'https://dt-tenders-app.vercel.app', // Replace with your actual client domain when deployed
-  'https://dt-tenders-app-client.vercel.app'
+  'https://frontend-b9qih9zbm-dill1027s-projects.vercel.app', // Replace with your actual client domain when deployed
+  'https://frontend-b9qih9zbm-dill1027s-projects.vercel.app'
 ];
 
 app.use(cors({
@@ -69,6 +69,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Root route - important for Vercel deployment
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'DT TENDERS API Server',
+    endpoints: ['/api/auth', '/api/projects', '/api/users', '/api/admin', '/api/health']
+  });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
