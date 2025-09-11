@@ -17,7 +17,7 @@ import {
   FiLock,
   FiEye
 } from 'react-icons/fi';
-import './ProjectForm.css'; // Corrected case to match the actual file
+import './ProjectForm.css'; // CSS import for form styling
 
 const ProjectForm: React.FC = () => {
   const [formData, setFormData] = useState<ProjectFormData>({});
