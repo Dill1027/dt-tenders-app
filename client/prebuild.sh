@@ -62,4 +62,32 @@ if [ ! -f public/manifest.json ]; then
 EOL
 fi
 
+# Ensure src/pages directory exists
+mkdir -p src/pages
+
+# Create ProjectForm.css if it doesn't exist (as a fallback)
+if [ ! -f src/pages/ProjectForm.css ]; then
+  echo "Creating ProjectForm.css..."
+  cat > src/pages/ProjectForm.css << 'EOL'
+/* Fallback CSS for ProjectForm component */
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.section-title {
+  color: #4b6cb7;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #4b6cb7;
+}
+
+.form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(75, 108, 183, 0.25);
+  border-color: #4b6cb7;
+}
+EOL
+fi
+
 echo "Public directory setup complete"
