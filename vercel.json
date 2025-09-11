@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/build",
+  "routes": [
+    { 
+      "src": "/api/(.*)", 
+      "dest": "/server/index.js" 
+    },
+    { 
+      "src": "/(.*)", 
+      "dest": "/client/build/$1" 
+    }
+  ]
+}
