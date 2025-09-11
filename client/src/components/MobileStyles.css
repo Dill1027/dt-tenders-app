@@ -1,0 +1,121 @@
+/* Central Mobile Styles Management */
+
+/* Import all mobile-specific stylesheets */
+@import './MobileNavbar.css';
+@import './MobileCards.css';
+@import './MobileForms.css';
+@import './MobileTables.css';
+
+/* Global mobile enhancements */
+@media (max-width: 768px) {
+  /* Improve touch targets */
+  button, 
+  .btn, 
+  a.btn, 
+  .nav-link, 
+  .dropdown-item {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Better spacing on mobile */
+  .container, 
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Add a bit more spacing between sections */
+  .row > [class*="col-"] {
+    margin-bottom: 1.25rem;
+  }
+  
+  /* Better typography on mobile */
+  h1, .h1 { font-size: 1.75rem; }
+  h2, .h2 { font-size: 1.5rem; }
+  h3, .h3 { font-size: 1.35rem; }
+  h4, .h4 { font-size: 1.25rem; }
+  h5, .h5 { font-size: 1.15rem; }
+  h6, .h6 { font-size: 1rem; }
+  
+  /* Improve general container appearance */
+  .card, 
+  .alert {
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: none;
+  }
+  
+  /* Loading indicator optimization */
+  .loading-spinner {
+    margin: 2rem auto;
+  }
+  
+  /* Helpful animation for interactive elements */
+  .btn:active,
+  .card:active,
+  .nav-link:active {
+    transform: scale(0.98);
+  }
+  
+  /* Standardize transitions */
+  .btn, 
+  .nav-link, 
+  .card,
+  .form-control,
+  .dropdown-item {
+    transition: all 0.2s ease;
+  }
+  
+  /* Scrollable areas */
+  .scrollable-area {
+    overflow-y: auto;
+    /* Add padding to improve scrolling experience */
+    padding-right: 5px;
+  }
+  
+  /* Modal adjustments */
+  .modal-content {
+    border-radius: 12px;
+    border: none;
+  }
+  
+  .modal-header {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 1rem 1.25rem;
+  }
+  
+  .modal-footer {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    padding: 1rem 1.25rem;
+  }
+  
+  /* Alert modifications */
+  .alert {
+    padding: 1rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .container, 
+  .container-fluid {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Smaller text on very small screens */
+  body {
+    font-size: 0.95rem;
+  }
+  
+  /* Further reduce headings */
+  h1, .h1 { font-size: 1.65rem; }
+  h2, .h2 { font-size: 1.4rem; }
+  h3, .h3 { font-size: 1.25rem; }
+}

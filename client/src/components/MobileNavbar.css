@@ -1,0 +1,103 @@
+/* Mobile Navigation Enhancements */
+
+@media (max-width: 991px) {
+  /* Smaller brand text and logo on mobile */
+  .navbar-brand {
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+  }
+  
+  /* Better spacing for collapsed navbar */
+  .navbar-collapse {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  
+  /* Improve dropdown display on mobile */
+  .nav-dropdown-mobile {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  /* Make dropdown items more touch-friendly */
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin: 0.125rem 0;
+  }
+  
+  /* Mobile-optimized nav items */
+  .nav-link {
+    padding: 0.75rem 1rem !important;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+  }
+  
+  .nav-link:active, 
+  .nav-link:focus {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Make navbar toggle button more visible */
+  .navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+  }
+  
+  .navbar-toggler:focus {
+    box-shadow: none;
+  }
+  
+  /* Style the dropdown menu to be more visible on mobile */
+  #user-nav-dropdown {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  #user-nav-dropdown::after {
+    margin-left: auto;
+  }
+  
+  /* Better dropdown menu styling */
+  .dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 0.5rem;
+  }
+  
+  /* Animated hamburger menu */
+  .navbar-toggler .navbar-toggler-icon {
+    transition: all 0.3s ease;
+  }
+  
+  .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+    transform: rotate(90deg);
+  }
+  
+  /* Hide scrollbar but allow scrolling if needed */
+  .navbar-nav {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding: 0.5rem 0;
+  }
+  
+  /* Active nav styling */
+  .nav-link.active {
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+  }
+}

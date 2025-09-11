@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 
 import './App.css';
+import './components/MobileStyles.css'; // Import mobile optimizations
 
 function App() {
   return (

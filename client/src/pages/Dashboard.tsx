@@ -5,6 +5,7 @@ import { Project, ProjectsResponse } from '../types';
 import { projectsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import ProjectCardMobile from '../components/ProjectCardMobile';
 import { 
   FiSearch, 
   FiPlus, 
@@ -30,6 +31,7 @@ const Dashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [pagination, setPagination] = useState({
     current: 1,
     pages: 1,
@@ -44,6 +46,16 @@ const Dashboard: React.FC = () => {
     fetchProjects();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, search, statusFilter]);
+  
+  // Handle window resize to track mobile state
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchProjects = async () => {
     try {
@@ -384,7 +396,8 @@ const Dashboard: React.FC = () => {
           
           {!loading && projects.length > 0 && (
             <>
-              <div className="table-container">
+              {/* Desktop View */}
+              <div className="d-none d-md-block table-container">
                 <Table hover className="projects-table">
                   <thead>
                     <tr>
@@ -488,6 +501,18 @@ const Dashboard: React.FC = () => {
                     ))}
                   </tbody>
                 </Table>
+              </div>
+              
+              {/* Mobile Card View */}
+              <div className="d-md-none px-3 pt-2">
+                {projects.map(project => (
+                  <ProjectCardMobile
+                    key={project._id}
+                    project={project}
+                    canEditPart1={canEditProject(project, 'part1')}
+                    canEditPart2={canEditProject(project, 'part2')}
+                  />
+                ))}
               </div>
               
               {renderPagination()}
