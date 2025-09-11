@@ -22,7 +22,9 @@ const allowedOrigins = [
   'http://localhost:3005',
   'https://frontend-pi-wine-91.vercel.app', // Custom domain alias
   'https://frontend-c3sxhrnre-dill1027s-projects.vercel.app',
-  'https://frontend-b9qih9zbm-dill1027s-projects.vercel.app'
+  'https://frontend-b9qih9zbm-dill1027s-projects.vercel.app',
+  'https://dt-tenders-app-4dbz.vercel.app', // New client URL
+  'https://dt-tenders-app.vercel.app'        // Server URL (for potential frontend hosted there)
 ];
 
 app.use(cors({
@@ -33,12 +35,14 @@ app.use(cors({
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log(`CORS blocked request from origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // Some legacy browsers (IE11) choke on 204
 }));
 
 // Security middleware
@@ -85,7 +89,9 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     message: 'DT TENDERS Server is running',
-    timestamp: new Date().toISOString()
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+    allowedOrigins: allowedOrigins
   });
 });
 
