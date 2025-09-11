@@ -90,4 +90,37 @@ if [ ! -f src/pages/ProjectForm.css ]; then
 EOL
 fi
 
+# Create ProjectView.css if it doesn't exist (as a fallback)
+if [ ! -f src/pages/ProjectView.css ]; then
+  echo "Creating ProjectView.css..."
+  cat > src/pages/ProjectView.css << 'EOL'
+/* Fallback CSS for ProjectView component */
+.project-view-container {
+  margin-bottom: 2rem;
+}
+
+.project-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #4b6cb7;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #4b6cb7;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.action-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+EOL
+fi
+
 echo "Public directory setup complete"

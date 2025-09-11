@@ -16,7 +16,7 @@ import {
   FiInfo,
   FiLock
 } from 'react-icons/fi';
-import './ProjectView.css'; // Corrected case to match the actual file
+import './ViewStyles.css'; // Using a different CSS file name to avoid case sensitivity issues
 
 const ProjectView: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
