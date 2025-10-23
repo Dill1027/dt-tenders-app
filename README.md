@@ -26,17 +26,17 @@ A comprehensive MERN stack web application for managing tenders and project work
 
 *User authentication interface with role-based access control*
 
-### Mobile View - Dashboard
+### Mobile Views
 
+#### Mobile Dashboard
 ![Mobile Dashboard](./IMG_0195.PNG)
-
 *Mobile-optimized dashboard with card-based layout and touch-friendly navigation*
 
-### Mobile View - Project Management
-
+#### Mobile Project Management  
 ![Mobile Project View](./IMG_0197.JPG)
+*Mobile project interface with responsive design and enhanced navigation*
 
-*Mobile project management interface showing responsive design and mobile enhancements*
+> 💡 **Tip**: To reduce the height of the mobile project image, you can split `IMG_0197.JPG` into two parts and display them side by side. See `IMAGE_SPLIT_GUIDE.md` for instructions.
 
 ## Features
 
