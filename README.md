@@ -14,17 +14,29 @@ A comprehensive MERN stack web application for managing tenders and project work
 
 ## Screenshots
 
-### Dashboard View
+### Desktop Dashboard View
 
-![Dashboard Screenshot](./images/dashboard.png)
+![Dashboard Screenshot](https://github.com/Dill1027/dt-tenders-app/blob/master/Screenshot%202025-10-23%20at%2014.32.29.png)
 
 *Main dashboard showing project overview with status tracking and search functionality*
 
-### Sign-In Page
+### Desktop Sign-In Page
 
-![Sign-In Screenshot](./images/signin.png)
+![Sign-In Screenshot](https://github.com/Dill1027/dt-tenders-app/blob/master/Screenshot%202025-10-23%20at%2014.32.56.png)
 
-*User authentication with role-based access control*
+*User authentication interface with role-based access control*
+
+### Mobile View - Dashboard
+
+![Mobile Dashboard](https://github.com/Dill1027/dt-tenders-app/blob/master/IMG_0195.PNG)
+
+*Mobile-optimized dashboard with card-based layout and touch-friendly navigation*
+
+### Mobile View - Project Management
+
+![Mobile Project View](https://github.com/Dill1027/dt-tenders-app/blob/master/IMG_0197.JPG)
+
+*Mobile project management interface showing responsive design and mobile enhancements*
 
 ## Features
 
