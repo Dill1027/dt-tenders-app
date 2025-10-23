@@ -14,29 +14,11 @@ A comprehensive MERN stack web application for managing tenders and project work
 
 ## Screenshots
 
-### Desktop Dashboard View
+### DT TENDERS Application Overview
 
-![Dashboard Screenshot](./Screenshot%202025-10-23%20at%2014.32.29.png)
+![DT TENDERS Application](./app-overview.png)
 
-*Main dashboard showing project overview with status tracking and search functionality*
-
-### Desktop Sign-In Page
-
-![Sign-In Screenshot](./Screenshot%202025-10-23%20at%2014.32.56.png)
-
-*User authentication interface with role-based access control*
-
-### Mobile Views
-
-#### Mobile Dashboard
-![Mobile Dashboard](./IMG_0195.PNG)
-*Mobile-optimized dashboard with card-based layout and touch-friendly navigation*
-
-#### Mobile Project Management  
-![Mobile Project View](./IMG_0197.JPG)
-*Mobile project interface with responsive design and enhanced navigation*
-
-> 💡 **Tip**: To reduce the height of the mobile project image, you can split `IMG_0197.JPG` into two parts and display them side by side. See `IMAGE_SPLIT_GUIDE.md` for instructions.
+*Complete application overview showing both desktop and mobile interfaces with responsive design*
 
 ## Features
 
