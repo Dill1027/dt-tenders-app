@@ -99,16 +99,6 @@ A comprehensive MERN stack web application for managing tenders and project work
 - **Progressive Web App** features
 - **Cross-device compatibility**
 
-## Test Credentials
-
-For testing purposes, the following users are available:
-
-| Role | Username | Password | Permissions |
-|------|----------|----------|-------------|
-| **Project Team** | `project` | `project@123` | Edit project sections, view all |
-| **Finance Team** | `finance` | `finance@321` | Edit finance sections, view all |
-| **View Only** | `deeptec` | `deeptec` | View all, no editing rights |
-| **Administrator** | `admin` | `admin@2023` | Full access to all features |
 
 ## Project Structure
 
