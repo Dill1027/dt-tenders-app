@@ -4,12 +4,6 @@
 
 A comprehensive MERN stack web application for managing tenders and project workflows with role-based permissions and mobile-optimized interface.
 
-## Application Overview
-
-![DT TENDERS Application](./app-overview.png)
-
-*Complete application overview showing both desktop and mobile interfaces with responsive design*
-
 ## Features
 
 ### User Management & Authentication
@@ -193,10 +187,6 @@ REACT_APP_VERSION=1.0.0
    npm start
    ```
 
-5. **Access the application**
-   - Frontend: <http://localhost:3000>
-   - Backend API: <http://localhost:5001>
-
 ## API Endpoints
 
 ### Authentication
@@ -292,22 +282,3 @@ NODE_ENV=production npm start
 - Configure proper `MONGODB_URI`
 - Set appropriate `CLIENT_URL`
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the ISC License.
-
-## Support
-
-For support and questions, please contact the development team.
-
----
-
-**DT TENDERS** - Streamlining tender management and project workflows with modern web technologies.
