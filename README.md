@@ -1,20 +1,10 @@
 # DT TENDERS - Project Management System
 
+![DT TENDERS Overview](./1.png)
+
 A comprehensive MERN stack web application for managing tenders and project workflows with role-based permissions and mobile-optimized interface.
 
-## Screenshots
-
-### Dashboard View
-![Dashboard Screenshot](./images/dashboard.png)
-*Main dashboard showing project overview with status tracking and search functionality*
-
-### Sign-In Page
-![Sign-In Screenshot](./images/signin.png)
-*User authentication with role-based access control*
-
-## Screenshots
-
-### DT TENDERS Application Overview
+## Application Overview
 
 ![DT TENDERS Application](./app-overview.png)
 
