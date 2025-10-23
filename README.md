@@ -4,12 +4,6 @@
 
 A comprehensive MERN stack web application for managing tenders and project workflows with role-based permissions and mobile-optimized interface.
 
-## Application Overview
-
-![DT TENDERS Application](./app-overview.png)
-
-*Complete application overview showing both desktop and mobile interfaces with responsive design*
-
 ## Features
 
 ### User Management & Authentication
